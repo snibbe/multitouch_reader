@@ -47,44 +47,64 @@ int main() {
     }
 
     // Main event loop
-    while (1) {
+    while (1)
+    {
         struct libinput_event *ev;
         libinput_dispatch(li);
-        
-        while ((ev = libinput_get_event(li))) {
- if (libinput_event_get_type(ev) == LIBINPUT_EVENT_TOUCH_DOWN) {
+
+        while ((ev = libinput_get_event(li)))
+        {
+            libinput_event_type evType = libinput_event_get_type(ev);
+
+            if (evType == LIBINPUT_EVENT_TOUCH_DOWN)
+            {
                 // Touch down event
                 struct libinput_event_touch *tev = libinput_event_get_touch_event(ev);
-                if (tev) {
+                if (tev)
+                {
                     int touch_id = libinput_event_touch_get_slot(tev);
                     double x = libinput_event_touch_get_x_transformed(tev, 1.0);
                     double y = libinput_event_touch_get_y_transformed(tev, 1.0);
                     printf("Touch Down - ID: %d, X: %f, Y: %f\n", touch_id, x, y);
                 }
             }
-            else if (libinput_event_get_type(ev) == LIBINPUT_EVENT_TOUCH_UP) {
+            else if (evType == LIBINPUT_EVENT_TOUCH_UP)
+            {
                 // Touch up event
                 struct libinput_event_touch *tev = libinput_event_get_touch_event(ev);
-                if (tev) {
+                if (tev)
+                {
                     int touch_id = libinput_event_touch_get_slot(tev);
                     printf("Touch Up - ID: %d\n", touch_id);
                 }
             }
-            else if (libinput_event_get_type(ev) == LIBINPUT_EVENT_TOUCH_MOTION) {
+            else if (evType == LIBINPUT_EVENT_TOUCH_MOTION)
+            {
                 // Touch motion event
                 struct libinput_event_touch *tev = libinput_event_get_touch_event(ev);
-                if (tev) {
+                if (tev)
+                {
                     int touch_id = libinput_event_touch_get_slot(tev);
                     double x = libinput_event_touch_get_x_transformed(tev, 1.0);
                     double y = libinput_event_touch_get_y_transformed(tev, 1.0);
                     printf("Touch Motion - ID: %d, X: %f, Y: %f\n", touch_id, x, y);
                 }
             }
-            
+            else if (evType == LIBINPUT_EVENT_TOUCH_CANCEL)
+            {
+                // Touch cancel event
+                struct libinput_event_touch *tev = libinput_event_get_touch_event(ev);
+                if (tev)
+                {
+                    int touch_id = libinput_event_touch_get_slot(tev);
+                    printf("Touch Cancel - ID: %d\n", touch_id);
+                }
+            }
+
             libinput_event_destroy(ev);
         }
     }
-    
+
     // Clean up and close the libinput context
     libinput_unref(li);
     
